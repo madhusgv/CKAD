@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-12-08T14:10:04Z"
+  labels:
+    name: app
+  name: app
+  namespace: elastic-stack
+  resourceVersion: "1867"
+  uid: 0ea13f0a-dd3f-4067-9b0f-3610081af975
+spec:
+  containers:
+  - image: kodekloud/event-simulator
+    imagePullPolicy: Always
+    name: app
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /log
+      name: log-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-nsftp
+      readOnly: true
+  - image: kodekloud/filebeat-configured
+    imagePullPolicy: Always
+    name: sidecar
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/log/event-simulator/
+      name: log-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: default-token-nsftp
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: controlplane
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - hostPath:
+      path: /var/log/webapp
+      type: DirectoryOrCreate
+    name: log-volume
+  - name: default-token-nsftp
+    secret:
+      defaultMode: 420
+      secretName: default-token-nsftp
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2021-12-08T14:10:04Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2021-12-08T14:10:22Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2021-12-08T14:10:22Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2021-12-08T14:10:04Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://24aa8e57b0196c961460ec7bd6ee1d35c9f9f6198839cd22e20cf7203e9aee72
+    image: kodekloud/event-simulator:latest
+    imageID: docker-pullable://kodekloud/event-simulator@sha256:1e3e9c72136bbc76c96dd98f29c04f298c3ae241c7d44e2bf70bcc209b030bf9
+    lastState: {}
+    name: app
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2021-12-08T14:10:08Z"
+  - containerID: docker://9b0c9ace38b999ea7c8a1e26c70d6444bd85cc41bfff01069d5e44b3a8c9bd2f
+    image: kodekloud/filebeat-configured:latest
+    imageID: docker-pullable://kodekloud/filebeat-configured@sha256:c49dab47599a42a3d80013b28d883bdd6276387e281de4ab96dddb6fbee360e7
+    lastState: {}
+    name: sidecar
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2021-12-08T14:10:22Z"
+  hostIP: 10.33.169.6
+  phase: Running
+  podIP: 10.244.0.12
+  podIPs:
+  - ip: 10.244.0.12
+  qosClass: BestEffort
+  startTime: "2021-12-08T14:10:04Z"
